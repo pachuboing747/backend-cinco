@@ -1,0 +1,90 @@
+<div id="realTimesProducts" class="uk-child-width-1-4@m" uk-grid>
+  <form id="createProductForm">
+    <label for="productName">Nombre del producto:</label>
+    <input type="text" id="productName" required>
+    <label for="productPrice">Precio:</label>
+    <input type="number" id="productPrice" required>
+    <button type="button" id="createProductBtn">Crear Producto</button>
+    <div>
+      <button type="button" id="deleteProductsBtn">Eliminar Productos</button>
+    </div>
+  </form>
+
+  <ul id="productList">
+    {{#each realTimesProducts}}
+    <li>Nombre: {{this.title}}, Precio: ${{this.price}}</li>
+    {{/each}}
+  </ul>
+
+  <script>
+    async function addProduct(event) {
+      event.preventDefault();
+      const productName = document.getElementById("productName").value;
+      const productPrice = document.getElementById("productPrice").value;
+
+      const response = await fetch("/cart/addProduct", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: productName,
+          price: productPrice,
+        }),
+      });
+
+      if (response.ok) {
+      socket.emit("addProduct", { title: productName, price: productPrice });
+      console.log(`elemento aregado ${productName}-${productPrice}`)
+    } else {
+      console.error("Error al agregar el producto");
+    }
+    }
+
+  async function updateProductList() {
+  try {
+    const response = await fetch("/cart/getProducts");
+    if (response.ok) {
+      const products = await response.json();
+      const productList = document.getElementById("productList");
+      productList.innerHTML = "";
+
+      if (products.length > 0) {
+        products.forEach((product) => {
+          const li = document.createElement("li");
+          li.textContent = `Nombre: ${product.title}, Precio: $${product.price}`;
+          productList.appendChild(li);
+        });
+      } else {
+        const li = document.createElement("li");
+        li.textContent = "No hay productos disponibles.";
+        productList.appendChild(li);
+      }
+    } else {
+      console.error("Error al obtener la lista de productos");
+    }
+  } catch (error) {
+    console.error("Error al obtener la lista de productos:", error);
+  }
+}
+
+
+  async function deleteProducts() {
+    const response = await fetch("/cart/deleteProducts", {
+    method: "POST",
+    });
+
+      if (response.ok) {
+        updateProductList();
+      } else {
+        console.error("Error al eliminar los productos");
+      }
+    }
+
+  document.getElementById("createProductBtn").addEventListener("click", addProduct);
+  document.getElementById("deleteProductsBtn").addEventListener("click", deleteProducts);
+  </script>
+</div>
+
+
+
