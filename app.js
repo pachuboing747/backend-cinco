@@ -8,6 +8,9 @@ const { Server } = require("socket.io");
 const Routes = require("./routes/index.js");
 const cartRouter = require("./routes/api/Cart-router.js")
 
+const CartsManager = require("./managers/CartsManager.js");
+const cartsManager = new CartsManager("cart.json")
+
 
 const app = express();
 const server = http.createServer(app);

@@ -41,10 +41,10 @@
     }
     }
 
-  async function updateProductList() {
+async function updateProductList() {
   try {
     const response = await fetch("/cart/getProducts");
-    if (response.ok) {
+    if (response.ok ) {
       const products = await response.json();
       const productList = document.getElementById("productList");
       productList.innerHTML = "";
@@ -57,17 +57,20 @@
         });
       } else {
         const li = document.createElement("li");
-        li.textContent = "No hay productos disponibles.";
+        li.textContent = "Carrito vacío. Agrega productos para verlos aquí.";
         productList.appendChild(li);
       }
-    } else {
-      console.error("Error al obtener la lista de productos");
     }
   } catch (error) {
-    console.error("Error al obtener la lista de productos:", error);
+    console.log("Error al obtener la lista de productos en el carrito:");
+    const productList = document.getElementById("productList");
+    productList.innerHTML = "";
+
+    const li = document.createElement("li");
+    li.textContent = "Error al obtener la lista de productos. Inténtalo nuevamente.";
+    productList.appendChild(li);
   }
 }
-
 
   async function deleteProducts() {
     const response = await fetch("/cart/deleteProducts", {
@@ -75,7 +78,7 @@
     });
 
       if (response.ok) {
-        updateProductList();
+        console.log("producto eliminado exitosamente");
       } else {
         console.error("Error al eliminar los productos");
       }

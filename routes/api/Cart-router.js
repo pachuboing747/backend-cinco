@@ -88,7 +88,7 @@ try {
   const products = await cartsManager.getAll();
   res.json(products || []);
 } catch (error) {
-  console.error("Error al obtener la lista de productos:", error);
+  console.log("El carrito esta vacio:");
   res.sendStatus(500);
 }
 });
