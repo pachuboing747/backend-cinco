@@ -89,6 +89,59 @@ class ProductManager {
 
     await this.#writeFile();
   }
+
+  async deleteAll() {
+    this. #products = [];
+    await this.#writeFile();
+  }
+
+  async createProduct(product, productId, cantidad) {
+    await this.#readFile();
+  
+    const existingProductIndex = product.products.findIndex((p) => p.product === productId);
+  
+    if (existingProductIndex !== -1) {
+      product.products[existingProductIndex].quantity += cantidad;
+    } else {
+      const newProduct = {
+        product: productId,
+        quantity: cantidad,
+      };
+  
+      product.products.push(newProduct);
+    }
+  
+    await this.#writeFile();
+  
+    return product;
+  }
+
+  async existInCart(product, productId) {
+    return product.products.find((p) => p.product == productId);
+  }
+  
+  
+  async updateProduct(product, productId) {
+  await this.#readFile();
+
+  const existingProduct = product.products.find((p) => p.product === productId);
+
+  if (!existingProduct) {
+
+    return null;
+  }
+
+  existingProduct.quantity++;
+
+  await this.#writeFile();
+
+
+  return existingProduct;
+  }
+
+  async existInCart(product, productId) {
+    return product.products.find((p) => p.product == productId);
+  }
 }
 
 module.exports = ProductManager;

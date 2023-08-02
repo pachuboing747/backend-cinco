@@ -1,4 +1,4 @@
-<div id="realTimesProducts" class="uk-child-width-1-4@m" uk-grid>
+<div>
   <form id="createProductForm">
     <label for="productName">Nombre del producto:</label>
     <input type="text" id="productName" required>
@@ -9,19 +9,30 @@
       <button type="button" id="deleteProductsBtn">Eliminar Productos</button>
     </div>
   </form>
+  <div id="realTimesProducts" class="uk-child-width-1-4@m" uk-grid>
+      {{#each products}}
+    <div>
+        <div class="uk-card uk-card-default">
+          <div class="uk-card-media-top">
+          <img src="https://fotografias.antena3.com/clipping/cmsimages02/2022/12/20/E9EDE726-2AF4-42F4-A2B8-F6B0460D752A/leo-messi-toca-copa-mundo-futbol-ganar-final-argentina_103.jpg?crop=2185,1639,x104,y0&width=1200&height=900&optimize=low&format=webply" alt="Messi">
+          </div>
+          <div class="uk-card-body">
+            <h3 class="uk-card-title">{{this.title}}</h3>
+            <h5>ARG ${{this.price}}</h5>
+            <p>{{this.description}}</p>
+          </div>
+        </div>
+      </div>
+      {{/each}}
 
-  <ul id="productList">
-    {{#each realTimesProducts}}
-    <li>Nombre: {{this.title}}, Precio: ${{this.price}}</li>
-    {{/each}}
-  </ul>
+  </div>
 
   <script>
-   async function addProduct(event) {
+  async function addProduct(event) {
   const productName = document.getElementById("productName").value;
   const productPrice = document.getElementById("productPrice").value;
 
-  const response = await fetch("/cart/addProduct", {
+  const response = await fetch("api/products/addProduct", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -32,17 +43,17 @@
     }),
   });
 
-  if (response.ok) {
-    console.log(`elemento agregado ${productName}-${productPrice}`);
-  } else {
-    console.error("Error al agregar el producto");
+    if (response.ok) {
+      console.log(`elemento agregado ${productName}-${productPrice}`);
+    } else {
+      console.error("Error al agregar el producto");
+    }
   }
-}
 
 
   async function updateProductList() {
     try {
-      const response = await fetch("/cart/getProducts");
+      const response = await fetch("api/products/getProducts");
       if (response.ok ) {
         const products = await response.json();
         const productList = document.getElementById("productList");
@@ -72,7 +83,7 @@
 }
 
   async function deleteProducts() {
-    const response = await fetch("/cart/deleteProducts", {
+    const response = await fetch("api/products/deleteProducts", {
     method: "POST",
     });
 

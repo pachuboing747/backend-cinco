@@ -1,6 +1,4 @@
 const {Router} = require ("express");
-const path = require ("path");
-const fs = require ("fs/promises")
 const ProductManager = require("../../managers/ProductManager");
 const productManager = new ProductManager("productos.json")
 const CartsManager = require ("../../managers/CartsManager")
@@ -33,14 +31,26 @@ router.get("/carrito", async(req, res)=>{
 
 router.get("/realTimesProducts", async(req, res)=>{
 
-    const carrito = await cartsManager.getAll()
+    const products = await productManager.getAll()
     res.render("realTimesProducts", {
         title: "RealTimesProducts",
-        carrito,
+        products,
         style: "carrito"
     })
     
 })
 
+router.post("/realTimesProducts", async (req, res) => {
+    try {
+      const requestData = req.body;
+      const response = { message: "Solicitud POST exitosa", data: requestData };
+      res.status(200).json(response);
+    } catch (error) {
+    
+      const errorMessage = "Ocurrió un error durante el procesamiento de la solicitud POST.";
+      res.status(500).json({ error: errorMessage });
+    }
+});
   
+
 module.exports = router;

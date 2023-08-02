@@ -1,16 +1,12 @@
 const express = require("express");
-const fs = require("fs/promises");
 const http = require("http");
 const path = require("path");
 const handlebars = require("express-handlebars");
 const { Server } = require("socket.io");
 
+
 const Routes = require("./routes/index.js");
-const cartRouter = require("./routes/api/Cart-router.js")
-
-const CartsManager = require("./managers/CartsManager.js");
-const cartsManager = new CartsManager("cart.json")
-
+const socketManager = require ("./websocket/socketManager.js")
 
 const app = express();
 const server = http.createServer(app);
@@ -24,29 +20,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/public", express.static(path.join(__dirname + "/public")));
 
+
+app.use((req,res,next) =>{
+  req.io = io
+  next()
+})
+
 app.use("/", Routes.home);
-app.use("/cart", cartRouter)
+
+app.use("/api", (req, res, next)=>{
+  req.io = io
+  next()
+}, Routes.api)
 
 
-io.on("connection", (socket) => {
-  console.log(`usuario conectado ${socket.id}`);
-
-  socket.on("addProduct", async (productData) => {
-    try {
-      await cartsManager.create(productData);
-
-      io.emit('productAdded', productData);
-    } catch (error) {
-      console.error("Error al agregar el producto:", error);
-    }
-  });
-
-  socket.on("disconnect", () => {
-    console.log("usuario desconectdo");
-  });
-
-  
-});
+io.on("connection", socketManager)
 
 const port = 8080;
 server.listen(port, () => {

@@ -26,7 +26,6 @@ router.get("/", async (req, res) => {
   let filtrados = products;
 
   if (search) {
-    /// filtrar
     filtrados = filtrados.filter(
       (p) =>
         p.keywords.includes(search.toLowerCase()) ||
@@ -46,9 +45,10 @@ router.get("/", async (req, res) => {
 
 // /api/productos/
 router.post("/", async (req, res) => {
-  const { body } = req;
+  const { body, io} = req;
 
   const product = await productManager.create(body);
+  io.emit("newProduct", product)
 
   res.status(201).send(product);
 });
@@ -88,5 +88,41 @@ router.delete("/:id", async (req, res) => {
   res.sendStatus(200);
 
 })
+
+router.post("/addProduct", async (req, res) => {
+  const { title, price } = req.body;
+
+  try {
+    await productManager.create({ title, price });
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error al agregar el producto:", error);
+    res.sendStatus(500);
+  }
+});
+
+router.get("/getProducts", async (req, res) => {
+  try {
+    const products = await productManager.getAll();
+    res.json(products || []);
+  } catch (error) {
+    console.log("El carrito esta vacio:");
+    res.sendStatus(500);
+  }
+
+});
+
+router.post("/deleteProducts", async (req, res) => {
+  try {
+    await productManager.deleteAll();
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error al eliminar los productos:", error);
+    res.sendStatus(500);
+  }
+});
+
+
+
 
 module.exports = router;

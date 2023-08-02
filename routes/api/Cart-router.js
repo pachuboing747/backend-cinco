@@ -71,37 +71,7 @@ router.post('/:cid/product/:pid', async (req, res) => {
   }
 });
 
-router.post("/addProduct", async (req, res) => {
-  const { title, price } = req.body;
 
-  try {
-    await cartsManager.create({ title, price });
-    res.sendStatus(200);
-  } catch (error) {
-    console.error("Error al agregar el producto:", error);
-    res.sendStatus(500);
-  }
-});
-
-router.get("/getProducts", async (req, res) => {
-try {
-  const products = await cartsManager.getAll();
-  res.json(products || []);
-} catch (error) {
-  console.log("El carrito esta vacio:");
-  res.sendStatus(500);
-}
-});
-
-router.post("/deleteProducts", async (req, res) => {
-try {
-  await cartsManager.deleteAll();
-  res.sendStatus(200);
-} catch (error) {
-  console.error("Error al eliminar los productos:", error);
-  res.sendStatus(500);
-}
-});
 
 
 module.exports = router;
