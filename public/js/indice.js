@@ -2,8 +2,6 @@ const socket = io()
 
 const realTimesProducts = document.querySelector("#realTimesProducts")
 
-
-
 function addProducts({price,title}){
     if (realTimesProducts) {
     const div = document.createElement('div')
